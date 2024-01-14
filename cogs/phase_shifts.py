@@ -44,11 +44,13 @@ class PhaseShifts(commands.Cog, name='Phase Shifts'):
                 for player_id, channel_id in cabin_ownership_dict.items():
                     player_id = int(player_id)
 
-                    if (channel_id in available_channel_ids) and (player_id in town_square_member_ids):
+                    try:
                         available_channel_ids.remove(channel_id)
                         town_square_member_ids.remove(player_id)
 
                         movements[player_id] = channel_id
+                    except KeyError:
+                        pass
 
             if len(available_channel_ids) >= len(town_square_member_ids):
                 available_channel_ids = list(available_channel_ids)
