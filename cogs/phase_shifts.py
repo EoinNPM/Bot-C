@@ -8,7 +8,7 @@ class PhaseShifts(commands.Cog, name='Phase Shifts'):
         self.bot = bot
 
     @discord.slash_command(name='day', description='Progresses the game into the day phase.')
-    async def day(self, ctx):
+    async def day(self, ctx : discord.ApplicationContext):
         cabin_category_channel_id = self.bot.guild_manager.get_cabin_category_channel_id(ctx.guild_id)
         townsquare_channel_id = self.bot.guild_manager.get_townsquare_channel_id(ctx.guild_id)
 
@@ -27,7 +27,7 @@ class PhaseShifts(commands.Cog, name='Phase Shifts'):
         await ctx.respond(response)
 
     @discord.slash_command(name='night', description='Progresses the game into the night phase.')
-    async def night(self, ctx):
+    async def night(self, ctx : discord.ApplicationContext):
         movements = {}
 
         cabin_category_channel_id = self.bot.guild_manager.get_cabin_category_channel_id(ctx.guild_id)
@@ -35,7 +35,6 @@ class PhaseShifts(commands.Cog, name='Phase Shifts'):
 
         if cabin_category_channel_id and townsquare_channel_id:
             available_channel_ids = {channel.id for channel in ctx.guild.get_channel(cabin_category_channel_id).voice_channels}
-            print(ctx.guild.get_channel(townsquare_channel_id).members)
 
             town_square_member_ids = {
                 member.id for member in ctx.guild.get_channel(townsquare_channel_id).members
@@ -43,12 +42,14 @@ class PhaseShifts(commands.Cog, name='Phase Shifts'):
 
             if (cabin_ownership_dict := self.bot.guild_manager.get_cabin_ownership_dict(ctx.guild_id)):
                 for player_id, channel_id in cabin_ownership_dict.items():
+                    player_id = int(player_id)
+
                     if channel_id in available_channel_ids:
                         available_channel_ids.remove(channel_id)
 
-                        if int(player_id) in town_square_member_ids:
+                        if player_id in town_square_member_ids:
                             movements[player_id] = channel_id
-                            town_square_member_ids.remove(int(player_id))
+                            town_square_member_ids.remove(player_id)
 
             if len(available_channel_ids) >= len(town_square_member_ids):
                 available_channel_ids = list(available_channel_ids)
