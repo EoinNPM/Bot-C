@@ -46,9 +46,9 @@ class PhaseShifts(commands.Cog, name='Phase Shifts'):
 
                     if (channel_id in available_channel_ids) and (player_id in town_square_member_ids):
                         available_channel_ids.remove(channel_id)
+                        town_square_member_ids.remove(player_id)
 
                         movements[player_id] = channel_id
-                        town_square_member_ids.remove(player_id)
 
             if len(available_channel_ids) >= len(town_square_member_ids):
                 available_channel_ids = list(available_channel_ids)
