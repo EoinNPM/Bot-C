@@ -8,6 +8,7 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 INTENTS = discord.Intents.default()
+INTENTS.members = True
 
 bot = discord.Bot(intents=INTENTS)
 bot.guild_manager = GuildManager('config.json')
