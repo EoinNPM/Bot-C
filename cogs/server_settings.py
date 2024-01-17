@@ -38,9 +38,9 @@ class ServerSettings(commands.Cog, name='Server Settings'):
         player : Option(discord.Member, description='Please select a player.'), 
         channel : Option(discord.VoiceChannel, description='Please select a voice channel')
     ):
-        if channel in ctx.guild.get_channel(self.bot.get_cabin_category_channel_id(ctx.guild_id)).channels:
+        if channel in ctx.guild.get_channel(self.bot.guild_manager.get_cabin_category_channel_id(ctx.guild_id)).channels:
             try:
-                self.bot.set_member_as_cabin_owner(player.id, channel.id)
+                self.bot.guild_manager.set_member_as_cabin_owner(player.id, channel.id)
                 response = f"`{channel.name}` has been set as {player.nick}'s permanent cabin for the night phase."
             except CabinAlreadyAssignedException as e:
                 if e.member_id == player.id:
