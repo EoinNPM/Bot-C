@@ -36,7 +36,7 @@ class PhaseShifts(commands.Cog, name='Phase Shifts'):
         if cabin_category_channel_id and townsquare_channel_id:
             available_channel_ids = {channel.id for channel in ctx.guild.get_channel(cabin_category_channel_id).voice_channels}
 
-            town_square_member_ids = {
+            townsquare_member_ids = {
                 member.id for member in ctx.guild.get_channel(townsquare_channel_id).members
             if not any(role.id == self.bot.guild_manager.get_storyteller_role_id(ctx.guild_id) for role in member.roles)}
 
@@ -44,17 +44,17 @@ class PhaseShifts(commands.Cog, name='Phase Shifts'):
                 for player_id, channel_id in cabin_ownership_dict.items():
                     player_id = int(player_id)
 
-                    if (channel_id in available_channel_ids) and (player_id in town_square_member_ids):
+                    if (channel_id in available_channel_ids) and (player_id in townsquare_member_ids):
                         available_channel_ids.remove(channel_id)
-                        town_square_member_ids.remove(player_id)
+                        townsquare_member_ids.remove(player_id)
 
                         movements[player_id] = channel_id
 
-            if len(available_channel_ids) >= len(town_square_member_ids):
+            if len(available_channel_ids) >= len(townsquare_member_ids):
                 available_channel_ids = list(available_channel_ids)
                 random.shuffle(available_channel_ids)
 
-                movements.update(dict(zip(town_square_member_ids, available_channel_ids)))
+                movements.update(dict(zip(townsquare_member_ids, available_channel_ids)))
 
                 for player_id, channel_id in movements.items():
                     member = ctx.guild.get_member(player_id)
