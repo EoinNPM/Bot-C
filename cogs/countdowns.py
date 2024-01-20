@@ -21,7 +21,10 @@ class Countdowns(commands.Cog, name='Countdowns'):
         duration : Option(float, description='The duration of the countdown, in minutes.', min_value=0, max_value=60), 
         delay : Option(int, description='The delay after which players will be moved to the Town Square, in seconds.', required=False, min=0)
     ):
-        if (discussion_category_channel_id := self.bot.guild_manager.get_discussion_category_channel_id(ctx.guild_id)):
+        discussion_category_channel_id = self.bot.guild_manager.get_discussion_category_channel_id(ctx.guild_id)
+        townsquare_id = self.bot.guild_manager.get_townsquare_channel_id(ctx.guild_id)
+
+        if discussion_category_channel_id and townsquare_id:
             seconds_remaining = floor(duration * 60)
             self.bot.guild_manager.start_countdown(ctx.guild_id)
 
@@ -44,8 +47,6 @@ class Countdowns(commands.Cog, name='Countdowns'):
                             await ctx.send(f"Time's up! Returning you to the Town Square in {delay} seconds!")
                             await asyncio.sleep(delay)
 
-                            townsquare_id = self.bot.guild_manager.get_townsquare_channel_id(ctx.guild_id)
-
                             for channel in ctx.guild.get_channel(discussion_category_channel_id).voice_channels:
                                 if channel.id != townsquare_id:
                                     for member in channel.members:
@@ -57,8 +58,9 @@ class Countdowns(commands.Cog, name='Countdowns'):
                         self.bot.guild_manager.stop_countdown(ctx.guild_id)
         else:
             await ctx.respond(
-                'Please use `/choose-discussion-channels` to choose a category containing voice channels to act ' + \
-                    'as discussion rooms during the day phase.'
+                'Please use `/choose-townsquare` to choose a voice channel to act as the Town Square, ' + \
+                    'and please use `/choose-discussion-channels` to choose a category containing voice ' + \
+                    'channels to act as discussion rooms during the day phase.'
             )
 
     @discord.slash_command(name='pause-countdown', description='Pauses an existing countdown.')

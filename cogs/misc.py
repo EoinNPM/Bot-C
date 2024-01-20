@@ -20,6 +20,26 @@ class Misc(commands.Cog, name='Miscellaneous'):
     async def fearmonger(self, ctx : discord.ApplicationContext):
         await ctx.respond('The Fearmonger has chosen a new victim. 💀 Be careful who you execute!')
 
+    @discord.slash_command(name='gather', description='Gathers all players in the Town Square.')
+    async def gather(self, ctx : discord.ApplicationContext):
+        discussion_category_channel_id = self.bot.guild_manager.get_discussion_category_channel_id(ctx.guild_id)
+        townsquare_id = self.bot.guild_manager.get_townsquare_channel_id(ctx.guild_id)
+
+        if discussion_category_channel_id and townsquare_id:
+            for channel in ctx.guild.get_channel(discussion_category_channel_id).voice_channels:
+                if channel.id != townsquare_id:
+                    for member in channel.members:
+                        if not any(role.id == self.bot.guild_manager.get_storyteller_role_id(ctx.guild_id) for role in member.roles):
+                            await member.move_to(ctx.guild.get_channel(townsquare_id))
+
+            response = 'Moving all players back to the Town Square now!'
+        else:
+            response = 'Please use `/choose-townsquare` to choose a voice channel to act as the Town Square, ' + \
+                'and please use `/choose-discussion-channels` to choose a category containing voice channels ' + \
+                'to act as discussion rooms during the day phase.'
+            
+        ctx.respond(response)
+
     @discord.slash_command(name='help', description='Displays this help message.')
     async def help(self, ctx : discord.ApplicationContext):
         response = '```'
