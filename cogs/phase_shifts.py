@@ -9,6 +9,8 @@ class PhaseShifts(commands.Cog, name='Phase Shifts'):
 
     @discord.slash_command(name='day', description='Progresses the game into the day phase.')
     async def day(self, ctx : discord.ApplicationContext):
+        await ctx.response.defer()
+
         cabin_category_channel_id = self.bot.guild_manager.get_cabin_category_channel_id(ctx.guild_id)
         townsquare_channel_id = self.bot.guild_manager.get_townsquare_channel_id(ctx.guild_id)
 
@@ -24,10 +26,11 @@ class PhaseShifts(commands.Cog, name='Phase Shifts'):
                 'and please use `/choose-cabin-channels` to choose a category containing voice channels to act ' + \
                 'as cabins during the night phase.'
 
-        await ctx.respond(response)
+        await ctx.followup.send(response)
 
     @discord.slash_command(name='night', description='Progresses the game into the night phase.')
     async def night(self, ctx : discord.ApplicationContext):
+        await ctx.response.defer()
         movements = {}
 
         cabin_category_channel_id = self.bot.guild_manager.get_cabin_category_channel_id(ctx.guild_id)
@@ -70,7 +73,7 @@ class PhaseShifts(commands.Cog, name='Phase Shifts'):
                 'and please use `/choose-cabin-channels` to choose a category containing voice channels to act ' + \
                 'as cabins during the night phase.'
                         
-        await ctx.respond(response)
+        await ctx.followup.send(response)
 
 
 def setup(bot):
