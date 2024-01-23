@@ -1,0 +1,7 @@
+services:
+  botc:
+    image: botc
+    build:
+      context: .
+    volumes:
+    - ./.env:/botc/.env
