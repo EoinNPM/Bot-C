@@ -22,6 +22,8 @@ class Misc(commands.Cog, name='Miscellaneous'):
 
     @discord.slash_command(name='gather', description='Gathers all players in the Town Square.')
     async def gather(self, ctx : discord.ApplicationContext):
+        await ctx.response.defer()
+        
         discussion_category_channel_id = self.bot.guild_manager.get_discussion_category_channel_id(ctx.guild_id)
         townsquare_id = self.bot.guild_manager.get_townsquare_channel_id(ctx.guild_id)
 
@@ -38,7 +40,7 @@ class Misc(commands.Cog, name='Miscellaneous'):
                 'and please use `/choose-discussion-channels` to choose a category containing voice channels ' + \
                 'to act as discussion rooms during the day phase.'
             
-        ctx.respond(response)
+        await ctx.followup.send(response)
 
     @discord.slash_command(name='help', description='Displays this help message.')
     async def help(self, ctx : discord.ApplicationContext):
