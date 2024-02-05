@@ -18,14 +18,17 @@ class Countdowns(commands.Cog, name='Countdowns'):
     @discord.slash_command(name='start-countdown', description='Begins a countdown until players are returned to the Town Square.')
     async def start_countdown(self, 
         ctx : discord.ApplicationContext, 
-        duration : Option(float, description='The duration of the countdown, in minutes.', min_value=0, max_value=60), 
-        delay : Option(int, description='The delay after which players will be moved to the Town Square, in seconds.', required=False, min=0)
+        duration : Option(float, description='The duration of the countdown, in minutes.', min_value=0, max_value=60),
+        move_players : Option(str, description='Whether players will be forced to return to the Town Square.', choices=['yes', 'no'], default='yes'),
+        warning : Option(int, description='The advance warning given to players before the countdown ends, in seconds.', min=0, default=0)
     ):
         discussion_category_channel_id = self.bot.guild_manager.get_discussion_category_channel_id(ctx.guild_id)
         townsquare_id = self.bot.guild_manager.get_townsquare_channel_id(ctx.guild_id)
 
         if discussion_category_channel_id and townsquare_id:
+            sent_warning = False
             seconds_remaining = floor(duration * 60)
+
             self.bot.guild_manager.start_countdown(ctx.guild_id)
 
             interaction = await ctx.respond(
@@ -43,9 +46,8 @@ class Countdowns(commands.Cog, name='Countdowns'):
                     )
 
                     if seconds_remaining <= 0:
-                        if delay:
-                            await ctx.send(f"Time's up! Returning you to the Town Square in {delay} seconds!")
-                            await asyncio.sleep(delay)
+                        if move_players == 'yes':
+                            await ctx.send("Time's up! Returning you to the Town Square now!")
 
                             for channel in ctx.guild.get_channel(discussion_category_channel_id).voice_channels:
                                 if channel.id != townsquare_id:
@@ -56,6 +58,13 @@ class Countdowns(commands.Cog, name='Countdowns'):
                             await ctx.send("Time's up! Please return to the Town Square now!")
 
                         self.bot.guild_manager.stop_countdown(ctx.guild_id)
+                    elif seconds_remaining <= warning and not sent_warning:
+                        if move_players == 'yes':
+                            await ctx.send(f'You have {seconds_remaining} seconds until you will be returned to the Town Square.')
+                        else:
+                            await ctx.send(f'You have {seconds_remaining} seconds until you must return to the Town Square.')
+
+                        sent_warning = True
         else:
             await ctx.respond(
                 'Please use `/choose-townsquare` to choose a voice channel to act as the Town Square, ' + \
